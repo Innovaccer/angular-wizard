@@ -1,0 +1,74 @@
+<html lang="en" ng-app="demoApp">
+  <head>
+    <title>Datashop Wizard</title>
+    <!-- Base stylesheets -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,200italic,300,300italic,400,400italic,600,600italic,700,700italic' rel='stylesheet' type='text/css'>
+
+    <!-- Custom styles -->
+    <link rel="stylesheet" href="http://staging.innovaccer.com/public/css/vendor.css">
+    <link rel="stylesheet" href="http://staging.innovaccer.com/public/css/datashop.css">
+    <link rel="stylesheet" href="http://staging.innovaccer.com/public/css/custom-grid.css">
+    <link rel="stylesheet" href="http://staging.innovaccer.com/public/svg/sprite.css-60dce4f6.svg">
+    <link rel="stylesheet" href="http://staging.innovaccer.com/public/css/sprite.css">
+    <!-- End Custom Styles -->
+    <!-- <link rel="stylesheet" href="notification.min.css" /> -->
+  </head>
+
+  <body>
+    <div ng-controller="demoCtrl">
+      <div id="notification-wrapper"></div>
+      <div class="callout large">
+        <div class="row column text-center">
+          <h1>Angular Wizard</h1>
+          <p class="lead">A simple wizard directive made in Angular JS.</p>
+          <a href="#" class="button large">Find it on Github</a>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="columns large-12">
+          <form-wizard steps="steps">
+            <steps></steps>
+            <!-- <view></view> -->
+            <control-panel></control-panel>
+          </form-wizard>
+        </div>
+      </div>
+
+    </div>
+  </body>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.6.1/angular.min.js"></script>
+  <!-- <script type="text/javascript" src="http://staging.innovaccer.com/dist/app.built.js"></script> -->
+  <script type="text/javascript" src="wizard.min.js"></script>
+  <script type="text/javascript">
+
+    var app = angular.module('demoApp', ['wizard']);
+
+    app.controller('demoCtrl', function ($scope) {
+      $scope.hi = 'bye';
+      $scope.steps = [{
+        name: 'Profile',
+        template : '<h1>form-profile.html</h1>',
+        controller: 'ProfileController',
+        scope : $scope
+      },
+      {
+        name: 'Interests',
+        template : '<h1>form-interests.html</h1>',
+        controller: 'ProfileController',
+        scope : $scope
+      },
+      {
+        name: 'another one',
+        template : '<h1>form-interests</h1>',
+        controller: 'ProfileController',
+        scope : $scope
+      }
+    ];
+    })
+    .controller ('ProfileController', function (){
+
+    });
+  </script>
+</html>

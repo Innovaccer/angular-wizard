@@ -1,0 +1,5 @@
+<div id="status-buttons" class="text-center">
+    <button ng-repeat="step in steps" ng-click="loadTemplate(step, $index)">
+      <span>{{$index}}</span> {{step.name}}
+    </button>
+</div>
