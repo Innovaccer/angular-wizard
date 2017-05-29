@@ -1,12 +1,23 @@
-<div id="form-container" ng-init="init()">
-    <div class="page-header text-center">
-        <h2>Let's Make a Wizard</h2>
-        <div ng-transclude="steps"></div>
+<div class="wizard-container" ng-init="parent.init()">
+  <div class="row">
+    <div class="columns large-8 large-centered card">
+      <div class="wizard-header">
+        <div class="text-center">
+            <b>USER REGISTRATION</b>
+        </div>
+        <div class="steps" ng-transclude="steps"></div>
+      </div>
+
+      <div class="wizard-body">
+        <!-- <form name="{{formName}}" ng-submit="processForm()" novalidate> -->
+            <!-- our nested state views will be injected here -->
+            <div id="wizard-views"></div>
+        <!-- </form> -->
+      </div>
+
+      <div class="wizard-footer">
+        <div ng-transclude="controls"></div>
+      </div>
     </div>
-    <!-- use ng-submit to catch the form submission and use our Angular function -->
-    <form id="signup-form" ng-submit="processForm()">
-        <!-- our nested state views will be injected here -->
-        <div id="form-views"></div>
-    </form>
-    <div ng-transclude="controls"></div>
+  </div>
 </div>

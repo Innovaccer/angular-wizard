@@ -58,15 +58,15 @@ angular.module('wizard', [])
   /**
    * Wizard form data in steps.
    */
-  this.wizardData = {};
-
-  this.setWizardData = function (step, payload) {
-    this.wizardData[step] = payload;
-  };
-
-  this.removeWizardData = function (step) {
-    delete this.wizardData[step];
-  };
+  // this.wizardData = {};
+  //
+  // this.setWizardData = function (step, payload) {
+  //   this.wizardData[step] = payload;
+  // };
+  //
+  // this.removeWizardData = function (step) {
+  //   delete this.wizardData[step];
+  // };
 
   /**
    * Wizard form data in steps.
@@ -97,22 +97,23 @@ angular.module('wizard', [])
     restrict: 'E',
     templateUrl: 'wizard-directive.html',
     scope: {
-      steps: '='
+      steps: '=',
+      formName: '@'
     },
     transclude: {
       steps: 'steps',
       controls: 'controlPanel'
     },
-    controller: ['$scope', '$element', function ($scope, $element) {
+    controller: ['$element', function ($element) {
       /**
        * loadTemplate - load the compile template in view
        *
        * @param  {object} obj contains controller, scope information
        * @param  {number} idx index of the template to load from steps.
        */
-      $scope.loadTemplate = function (obj, idx) {
+      this.loadTemplate = function (obj, idx) {
         wizardService.compileTemplate(obj).then(function (tpl) {
-          var elem = angular.element($element[0].querySelector('#form-views'));
+          var elem = angular.element($element[0].querySelector('#wizard-views'));
           elem.empty();
           elem.append(tpl);
           wizardService.updateStep(idx);
@@ -124,14 +125,16 @@ angular.module('wizard', [])
        * init - initialize when components load at fist time.
        *        load first index of steps.
        */
-      $scope.init = function () {
+      this.init = function () {
         var currentStep = wizardService.currentStep;
-        var obj = $scope.steps[currentStep];
-        $scope.loadTemplate(obj, currentStep);
+        var obj = this.steps[currentStep];
+        this.loadTemplate(obj, currentStep);
       };
 
-      return $scope;
-    }]
+      return this;
+    }],
+    controllerAs: 'parent',
+    bindToController: true
   };
 }])
 
@@ -194,8 +197,28 @@ angular.module('wizard', [])
       };
     }
   };
-}]);
+}])
+.directive('formStepValidity', function () {
+  return {
+    restrict: 'A',
+    require: 'ngModel', // require: 'ngModel' gives you the controller
+    // for the ngModel directive,
+    scope: {
+      validation: '='
+    },
+    link: function (scope, element, attrs, ctrl) {
+        // The callback to call when a change of validity
+        // is detected
+      console.log(ctrl);
+      ctrl.$parsers.unshift(function (viewValue) {
+        if (scope.validation[ctrl.$name](viewValue)) {
+          ctrl.$setValidity('pwd', true);
+        }
+      });
+    }
+  };
+});
 
-angular.module("wizard").run(["$templateCache", function($templateCache) {$templateCache.put("control-panel.html","<div class=\"col-xs-6 col-xs-offset-3\"><a ui-sref=\"form.interests\" class=\"btn btn-block btn-info\" ng-click=\"control(\'next\')\">Next Section {{currentIndex()}} <span class=\"glyphicon glyphicon-circle-arrow-right\"></span></a></div><div class=\"col-xs-6 col-xs-offset-3\"><a ui-sref=\"form.interests\" class=\"btn btn-block btn-info\" ng-click=\"control(\'prev\')\">Prev Section {{currentIndex()}} <span class=\"glyphicon glyphicon-circle-arrow-right\"></span></a></div>");
-$templateCache.put("steps.html","<div id=\"status-buttons\" class=\"text-center\"><button ng-repeat=\"step in steps\" ng-click=\"loadTemplate(step, $index)\"><span>{{$index}}</span> {{step.name}}</button></div>");
-$templateCache.put("wizard-directive.html","<div id=\"form-container\" ng-init=\"init()\"><div class=\"page-header text-center\"><h2>Let\'s Make a Wizard</h2><div ng-transclude=\"steps\"></div></div><form id=\"signup-form\" ng-submit=\"processForm()\"><div id=\"form-views\"></div></form><div ng-transclude=\"controls\"></div></div>");}]);
+angular.module("wizard").run(["$templateCache", function($templateCache) {$templateCache.put("control-panel.html","<div class=\"row\"><div class=\"columns large-6 text-left\"><button class=\"button default\" ng-click=\"control(\'prev\')\">Cancel</button></div><div class=\"columns large-6 text-right\"><button class=\"button default\" ng-click=\"control(\'prev\')\">Previous</button> <button class=\"button primary\" ng-click=\"control(\'next\')\">Next</button></div></div>");
+$templateCache.put("steps.html","<div id=\"status-buttons\" class=\"text-center\"><div class=\"equidistant has-cursor\" ng-repeat=\"step in steps\" ng-click=\"loadTemplate(step, $index)\">{{step.name}}</div></div>");
+$templateCache.put("wizard-directive.html","<div class=\"wizard-container\" ng-init=\"parent.init()\"><div class=\"row\"><div class=\"columns large-8 large-centered card\"><div class=\"wizard-header\"><div class=\"text-center\"><b>USER REGISTRATION</b></div><div class=\"steps\" ng-transclude=\"steps\"></div></div><div class=\"wizard-body\"><div id=\"wizard-views\"></div></div><div class=\"wizard-footer\"><div ng-transclude=\"controls\"></div></div></div></div></div>");}]);

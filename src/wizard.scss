@@ -1,0 +1,25 @@
+.wizard-container {
+  .large-centered {
+    padding: 0px;
+    .wizard-header {
+      padding: 15px;
+      background-color: #f7f7f7;
+    }
+    .steps {
+      padding-top:10px;
+    }
+    .equidistant {
+      display: inline-block;
+      width: 24%;
+      text-align: center;
+    }
+
+    .wizard-body {
+      padding:10px;
+    }
+
+    .wizard-footer {
+      padding:10px;
+    }
+  }
+}

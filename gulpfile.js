@@ -11,6 +11,7 @@ var concat = require('gulp-concat');
 var addsrc = require('gulp-add-src');
 var order = require('gulp-order');
 var packageName = 'wizard';
+var del = require('del');
 // var protractor = require('gulp-protractor').protractor;
 
 var pkg = require('./package.json');
@@ -35,7 +36,6 @@ gulp.task('styles', function () {
      .pipe(rename({
        suffix: '.min'
      }))
-     .pipe(header(banner, { pkg: pkg }))
      .pipe(gulp.dest('dist'))
      .pipe(gulp.dest('demo'));
 });
@@ -71,7 +71,7 @@ gulp.task('service', function () {
    .pipe(header(banner, { pkg: pkg }))
    .pipe(gulp.dest('dist'))
 
-   .pipe(uglify())
+   // .pipe(uglify())
    .pipe(rename({
      suffix: '.min'
    }))
@@ -80,17 +80,15 @@ gulp.task('service', function () {
    .pipe(gulp.dest('demo'));
 });
 
-// ======
-// gulp.task('e2eTest', function() {
-//    gulp.src(['./test/**/*_spec.js'])
-//        .pipe(protractor({
-//            configFile: "protractor_conf.js"
-//        }))
-//        .on('error', function(e) {throw e});
-// });
-//
+gulp.task('clean', function () {
+  return del([
+    'dist/',
+    'build',
+    'demo/wizard.min.js'
+  ]);
+});
 // gulp.task('tests', ['e2eTest']);
-gulp.task('build', ['templates', 'service', 'styles']);
+gulp.task('build', ['clean', 'templates', 'service', 'styles']);
 // gulp.task('deploy', ['build']);
 
 gulp.task('default', ['deploy'], function () {});

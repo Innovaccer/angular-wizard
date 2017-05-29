@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="http://staging.innovaccer.com/public/svg/sprite.css-60dce4f6.svg">
     <link rel="stylesheet" href="http://staging.innovaccer.com/public/css/sprite.css">
     <!-- End Custom Styles -->
-    <!-- <link rel="stylesheet" href="notification.min.css" /> -->
+    <link rel="stylesheet" href="wizard.min.css" />
   </head>
 
   <body>
@@ -28,7 +28,7 @@
 
       <div class="row">
         <div class="columns large-12">
-          <form-wizard steps="steps">
+          <form-wizard steps="steps" form-name="userReg">
             <steps></steps>
             <!-- <view></view> -->
             <control-panel></control-panel>
@@ -49,7 +49,7 @@
       $scope.hi = 'bye';
       $scope.steps = [{
         name: 'Profile',
-        template : '<h1>form-profile.html</h1>',
+        templateUrl : 'profile.html',
         controller: 'ProfileController',
         scope : $scope
       },
@@ -60,15 +60,21 @@
         scope : $scope
       },
       {
-        name: 'another one',
+        name: 'Submit',
         template : '<h1>form-interests</h1>',
         controller: 'ProfileController',
         scope : $scope
       }
     ];
     })
-    .controller ('ProfileController', function (){
+    .controller ('ProfileController', function ($scope) {
+      $scope.profile = {};
 
+      $scope.validations = {
+        name : function (n) {
+          return n.length > 2;
+        }
+      };
     });
   </script>
 </html>
