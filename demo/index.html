@@ -40,6 +40,7 @@
   </body>
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.6.1/angular.min.js"></script>
   <!-- <script type="text/javascript" src="http://staging.innovaccer.com/dist/app.built.js"></script> -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js"></script>
   <script type="text/javascript" src="wizard.min.js"></script>
   <script type="text/javascript">
 
@@ -56,7 +57,7 @@
       {
         name: 'Interests',
         template : '<h1>form-interests.html</h1>',
-        controller: 'ProfileController',
+        controller: 'InterestController',
         scope : $scope
       },
       {
@@ -72,6 +73,15 @@
 
       $scope.validations = {
         name : function (n) {
+          return n.length > 2;
+        }
+      };
+    })
+    .controller ('InterestController', function ($scope) {
+      $scope.interest = {};
+
+      $scope.validations = {
+        interest : function (n) {
           return n.length > 2;
         }
       };

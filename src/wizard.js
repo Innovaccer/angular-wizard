@@ -40,7 +40,10 @@ angular.module('wizard', [])
       $controller(obj.controller, {
         $scope: scope
       });
-      deferred.resolve(templateElement);
+      deferred.resolve({
+        template: templateElement,
+        scope: scope
+      });
     }).catch(function (error) {
       deferred.reject(error);
     });
@@ -51,15 +54,15 @@ angular.module('wizard', [])
   /**
    * Wizard form data in steps.
    */
-  // this.wizardData = {};
-  //
-  // this.setWizardData = function (step, payload) {
-  //   this.wizardData[step] = payload;
-  // };
-  //
-  // this.removeWizardData = function (step) {
-  //   delete this.wizardData[step];
-  // };
+  this.data = {};
+
+  this.setWizardData = function (step, payload) {
+    this.data[step] = payload;
+  };
+
+  this.removeWizardData = function (step) {
+    delete this.data[step];
+  };
 
   /**
    * Wizard form data in steps.
@@ -98,6 +101,7 @@ angular.module('wizard', [])
       controls: 'controlPanel'
     },
     controller: ['$element', function ($element) {
+      var templateScope = null;
       /**
        * loadTemplate - load the compile template in view
        *
@@ -105,14 +109,21 @@ angular.module('wizard', [])
        * @param  {number} idx index of the template to load from steps.
        */
       this.loadTemplate = function (obj, idx) {
+        this.saveData();
         wizardService.compileTemplate(obj).then(function (tpl) {
           var elem = angular.element($element[0].querySelector('#wizard-views'));
           elem.empty();
-          elem.append(tpl);
+          elem.append(tpl.template);
+          templateScope = tpl.scope;
           wizardService.updateStep(idx);
         });
       };
 
+      this.saveData = function () {
+        if (templateScope) {
+          wizardService.data[wizardService.currentStep] = templateScope;
+        }
+      };
 
       /**
        * init - initialize when components load at fist time.
@@ -202,11 +213,12 @@ angular.module('wizard', [])
     link: function (scope, element, attrs, ctrl) {
         // The callback to call when a change of validity
         // is detected
-      console.log(ctrl);
+      console.log(scope.validation);
       ctrl.$parsers.unshift(function (viewValue) {
-        if (scope.validation[ctrl.$name](viewValue)) {
-          ctrl.$setValidity('pwd', true);
-        }
+        // if (scope.validation[ctrl.$name](viewValue)) {
+        //   ctrl.$setValidity('pwd', true);
+        // }
+        console.log(viewValue);
       });
     }
   };
