@@ -28,10 +28,9 @@
 
       <div class="row">
         <div class="columns large-12">
-          <form-wizard steps="steps" form-name="userReg">
+          <form-wizard steps="steps">
             <steps></steps>
-            <!-- <view></view> -->
-            <control-panel></control-panel>
+            <control-panel on-cancel="" on-submit=""></control-panel>
           </form-wizard>
         </div>
       </div>
@@ -48,6 +47,9 @@
 
     app.controller('demoCtrl', function ($scope) {
       $scope.hi = 'bye';
+      $scope.submit = function () {
+        console.log('I am submit');
+      }
       $scope.steps = [{
         name: 'Profile',
         templateUrl : 'profile.html',
@@ -69,7 +71,7 @@
     ];
     })
     .controller ('ProfileController', function ($scope) {
-      $scope.profile = {};
+      $scope.model = {};
 
       $scope.validations = {
         name : function (n) {
@@ -78,7 +80,7 @@
       };
     })
     .controller ('InterestController', function ($scope) {
-      $scope.interest = {};
+      $scope.model = {};
 
       $scope.validations = {
         interest : function (n) {

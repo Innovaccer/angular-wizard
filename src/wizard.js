@@ -56,13 +56,22 @@ angular.module('wizard', [])
    */
   this.data = {};
 
-  this.setWizardData = function (step, payload) {
+  this.setData = function (step, payload) {
     this.data[step] = payload;
   };
 
-  this.removeWizardData = function (step) {
+  this.getData = function () {
+    return this.data;
+  };
+
+  this.removeData = function (step) {
     delete this.data[step];
   };
+
+  this.currentStepData = function () {
+    return this.data[this.currentStep];
+  };
+
 
   /**
    * Wizard form data in steps.
@@ -109,19 +118,25 @@ angular.module('wizard', [])
        * @param  {number} idx index of the template to load from steps.
        */
       this.loadTemplate = function (obj, idx) {
-        this.saveData();
         wizardService.compileTemplate(obj).then(function (tpl) {
           var elem = angular.element($element[0].querySelector('#wizard-views'));
+          var currentStepData = wizardService.currentStepData();
           elem.empty();
           elem.append(tpl.template);
+          if (currentStepData) {
+            tpl.scope.model = currentStepData.model;
+          }
           templateScope = tpl.scope;
           wizardService.updateStep(idx);
         });
       };
 
       this.saveData = function () {
+        var step = wizardService.currentStep;
         if (templateScope) {
-          wizardService.data[wizardService.currentStep] = templateScope;
+          wizardService.setData(step, {
+            model: templateScope.model
+          });
         }
       };
 
@@ -158,6 +173,7 @@ angular.module('wizard', [])
         var currentStep = wizardService.currentStep;
         // check for the current index so not compile template again.
         if (idx !== currentStep) {
+          ctrl.saveData();
           ctrl.loadTemplate(obj, idx);
         }
       };
@@ -170,14 +186,22 @@ angular.module('wizard', [])
     restrict: 'E',
     require: '^formWizard',
     templateUrl: 'control-panel.html',
+    scope: {
+      onCancel: '&onCancel',
+      onSubmit: '&onSubmit'
+    },
     link: function (scope, elements, attrs, ctrl) {
       var stepsLength = ctrl.steps.length;
       var loadTemplate = function (index) {
         ctrl.loadTemplate(ctrl.steps[index], index);
       };
 
-      scope.currentIndex = function () {
-        return wizardService.currentStep;
+      scope.nextStep = function () {
+        return wizardService.currentStep === stepsLength - 1;
+      };
+
+      scope.prevStep = function () {
+        return wizardService.currentStep === 0;
       };
 
       scope.control = function (action) {
@@ -196,8 +220,6 @@ angular.module('wizard', [])
             loadTemplate(wizardService.currentStep);
           }
         }
-
-        scope.currentIndex();
       };
     }
   };
@@ -206,10 +228,7 @@ angular.module('wizard', [])
   return {
     restrict: 'A',
     require: 'ngModel', // require: 'ngModel' gives you the controller
-    // for the ngModel directive,
-    scope: {
-      validation: '='
-    },
+                        // for the ngModel directive,
     link: function (scope, element, attrs, ctrl) {
         // The callback to call when a change of validity
         // is detected

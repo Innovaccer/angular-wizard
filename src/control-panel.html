@@ -1,16 +1,19 @@
 <div class="row">
   <div class="columns large-6 text-left">
-      <button class="button default" ng-click="control('prev')">
+      <button class="button default" ng-if="onCancel" ng-click="onCancel()">
         Cancel
       </button>
   </div>
 
   <div class="columns large-6 text-right">
-      <button class="button default" ng-click="control('prev')">
+      <button class="button default" ng-disabled="prevStep()" ng-click="control('prev')">
         Previous
       </button>
-      <button class="button primary" ng-click="control('next')">
+      <button class="button primary" ng-disabled="nextStep()" ng-click="control('next')">
         Next
+      </button>
+      <button class="button primary" ng-if="onSubmit" ng-click="onSubmit()">
+        Submit
       </button>
   </div>
 </div>
