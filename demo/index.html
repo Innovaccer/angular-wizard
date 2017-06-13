@@ -58,9 +58,7 @@
       },
       {
         name: 'Interests',
-        template : '<h1>form-interests.html</h1>',
-        controller: 'InterestController',
-        scope : $scope
+        template : '<h1>form-interests.html</h1>'
       },
       {
         name: 'Submit',
@@ -73,8 +71,8 @@
     .controller ('ProfileController', function ($scope) {
       $scope.model = {};
 
-      $scope.validations = {
-        name : function (n) {
+      $scope.validation = {
+        work: function (n) {
           return n.length > 2;
         }
       };
@@ -82,7 +80,7 @@
     .controller ('InterestController', function ($scope) {
       $scope.model = {};
 
-      $scope.validations = {
+      $scope.validation = {
         interest : function (n) {
           return n.length > 2;
         }

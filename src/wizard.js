@@ -37,9 +37,12 @@ angular.module('wizard', [])
     getTemplate(obj.template, obj.templateUrl).then(function (template) {
       var scope = (obj.scope || $rootScope).$new();
       var templateElement = $compile(template)(scope);
-      $controller(obj.controller, {
-        $scope: scope
-      });
+      // Inject controller
+      if (obj.controller) {
+        $controller(obj.controller, {
+          $scope: scope
+        });
+      }
       deferred.resolve({
         template: templateElement,
         scope: scope
@@ -52,7 +55,7 @@ angular.module('wizard', [])
   };
 
   /**
-   * Wizard form data in steps.
+   * Wizard form data
    */
   this.data = {};
 
@@ -94,6 +97,33 @@ angular.module('wizard', [])
 
   this.stepDecrement = function () {
     this.currentStep -= 1;
+  };
+
+
+  /**
+   * Models
+   */
+  this.validation = {};
+
+  this.setValidation = function (name, validation) {
+    this.validation[name] = validation;
+  };
+
+  this.deleteValidation = function () {
+    this.validation = {};
+  };
+
+  this.checkModel = function () {
+    var deferred = $q.defer();
+    var bool = Object.values(this.validation).every(function (o) {
+      return o === true;
+    });
+    if (bool) {
+      deferred.resolve(bool);
+    } else {
+      deferred.reject();
+    }
+    return deferred.promise;
   };
 })
 
@@ -216,28 +246,47 @@ angular.module('wizard', [])
 
         if (action === 'next') {
           if (currentStep < stepsLength - 1) {
-            wizardService.stepIncrement();
-            loadTemplate(wizardService.currentStep);
+            wizardService.checkModel().then(function () {
+              // Saves data
+              ctrl.saveData();
+              wizardService.stepIncrement();
+              loadTemplate(wizardService.currentStep);
+              wizardService.deleteValidation();
+            }).catch(function () {
+              console.log('Please validate model');
+            });
           }
         }
       };
     }
   };
 })
-.directive('formStepValidity', function () {
+.directive('formStepValidity', function (wizardService) {
   return {
     restrict: 'A',
-    require: 'ngModel', // require: 'ngModel' gives you the controller
-                        // for the ngModel directive,
+    // require: 'ngModel' gives the controller
+    // for the ngModel directive,
+    require: 'ngModel',
+    scope: {
+      validation: '='
+    },
     link: function (scope, element, attrs, ctrl) {
         // The callback to call when a change of validity
         // is detected
       console.log(scope.validation);
       ctrl.$parsers.unshift(function (viewValue) {
+        // console.log(scope.validation[ctrl.$name](viewValue));
+        // console.log(ctrl);
+        if (scope.validation) {
+          wizardService
+            .setValidation(ctrl.$name, scope.validation.call(null, viewValue));
+          // console.log(viewValue);
+        }
+        console.log(wizardService);
         // if (scope.validation[ctrl.$name](viewValue)) {
         //   ctrl.$setValidity('pwd', true);
         // }
-        console.log(viewValue);
+        // console.log(viewValue);
       });
     }
   };
