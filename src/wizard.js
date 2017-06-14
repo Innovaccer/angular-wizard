@@ -103,28 +103,35 @@ angular.module('wizard', [])
   /**
    * Models
    */
-  this.validation = {};
-
-  this.setValidation = function (name, validation) {
-    this.validation[name] = validation;
+  this.formValidationStatus = true;
+  this.formValidation = function (validity) {
+    this.formValidationStatus = validity;
   };
 
-  this.deleteValidation = function () {
-    this.validation = {};
+  this.getFormValidation = function () {
+    return this.formValidationStatus;
   };
-
-  this.checkModel = function () {
-    var deferred = $q.defer();
-    var bool = Object.values(this.validation).every(function (o) {
-      return o === true;
-    });
-    if (bool) {
-      deferred.resolve(bool);
-    } else {
-      deferred.reject();
-    }
-    return deferred.promise;
-  };
+  //
+  // this.setValidation = function (name, validation) {
+  //   this.validation[name] = validation;
+  // };
+  //
+  // this.deleteValidation = function () {
+  //   this.validation = {};
+  // };
+  //
+  // this.checkModel = function () {
+  //   var deferred = $q.defer();
+  //   var bool = Object.values(this.validation).every(function (o) {
+  //     return o === true;
+  //   });
+  //   if (bool) {
+  //     deferred.resolve(bool);
+  //   } else {
+  //     deferred.reject();
+  //   }
+  //   return deferred.promise;
+  // };
 })
 
 .directive('formWizard', function (wizardService) {
@@ -136,8 +143,8 @@ angular.module('wizard', [])
       formName: '@'
     },
     transclude: {
-      steps: 'steps',
-      controls: 'controlPanel'
+      steps: '?steps',
+      controls: '?controlPanel'
     },
     controller: ['$element', function ($element) {
       var templateScope = null;
@@ -230,12 +237,15 @@ angular.module('wizard', [])
         ctrl.loadTemplate(ctrl.steps[index], index);
       };
 
+      scope.validation = wizardService.getFormValidation.bind(null);
+
       scope.nextStep = function () {
-        return wizardService.currentStep === stepsLength - 1;
+        return wizardService.currentStep === stepsLength - 1 ||
+          !scope.validation();
       };
 
       scope.prevStep = function () {
-        return wizardService.currentStep === 0;
+        return wizardService.currentStep === 0 || !scope.validation();
       };
 
       scope.control = function (action) {
@@ -250,17 +260,12 @@ angular.module('wizard', [])
 
         if (action === 'next') {
           if (currentStep < stepsLength - 1) {
-            wizardService.checkModel().then(function () {
-              // Saves data
-              ctrl.saveData();
-              wizardService.stepIncrement();
-              loadTemplate(wizardService.currentStep);
-              wizardService.deleteValidation();
-            }).catch(function () {
-              console.log('Please validate model');
-            });
+            wizardService.stepIncrement();
+            loadTemplate(wizardService.currentStep);
           }
         }
+        // Saves data
+        ctrl.saveData();
       };
     }
   };
@@ -268,27 +273,11 @@ angular.module('wizard', [])
 .directive('formStepValidity', function (wizardService) {
   return {
     restrict: 'A',
-    // require: 'ngModel' gives the controller
-    // for the ngModel directive,
-    require: 'ngModel',
-    scope: {
-      validation: '=',
-    }
-    link: function (scope, element, attrs, ctrl) {
-      // The callback to call when a change of validity
-      // is detected
-      if (scope.validation) {
-        wizardService.setValidation(ctrl.$name, false);
-      }
-      ctrl.$parsers.unshift(function (viewValue) {
-        var bool = null;
-        bool = scope.validation.call(null, viewValue);
-        if (bool) {
-          ctrl.$setValidity('formStepValidity', true);
-        } else {
-          ctrl.$setValidity('formStepValidity', false);
-        }
-        return viewValue;
+    require: '^form',
+    link: function (scope, element, attrs, formCtrl) {
+      // Watch the form validity
+      scope.$watch(function () {
+        wizardService.formValidation.call(null, formCtrl.$valid);
       });
     }
   };
