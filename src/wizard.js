@@ -149,10 +149,11 @@ angular.module('wizard', [])
        */
       this.loadTemplate = function (obj, idx) {
         wizardService.compileTemplate(obj).then(function (tpl) {
-          var elem = angular.element($element[0].querySelector('#wizard-views'));
+          var ele = angular.element($element[0].querySelector('#wizard-views'));
           var currentStepData = wizardService.currentStepData();
-          elem.empty();
-          elem.append(tpl.template);
+          ele.empty();
+          ele.append(tpl.template);
+          // loading current step data
           if (currentStepData) {
             tpl.scope.model = currentStepData.model;
           }
@@ -161,6 +162,9 @@ angular.module('wizard', [])
         });
       };
 
+      /**
+       * saveData - saves data in factory
+       */
       this.saveData = function () {
         var step = wizardService.currentStep;
         if (templateScope) {
@@ -268,25 +272,23 @@ angular.module('wizard', [])
     // for the ngModel directive,
     require: 'ngModel',
     scope: {
-      validation: '='
-    },
+      validation: '=',
+    }
     link: function (scope, element, attrs, ctrl) {
-        // The callback to call when a change of validity
-        // is detected
-      console.log(scope.validation);
+      // The callback to call when a change of validity
+      // is detected
+      if (scope.validation) {
+        wizardService.setValidation(ctrl.$name, false);
+      }
       ctrl.$parsers.unshift(function (viewValue) {
-        // console.log(scope.validation[ctrl.$name](viewValue));
-        // console.log(ctrl);
-        if (scope.validation) {
-          wizardService
-            .setValidation(ctrl.$name, scope.validation.call(null, viewValue));
-          // console.log(viewValue);
+        var bool = null;
+        bool = scope.validation.call(null, viewValue);
+        if (bool) {
+          ctrl.$setValidity('formStepValidity', true);
+        } else {
+          ctrl.$setValidity('formStepValidity', false);
         }
-        console.log(wizardService);
-        // if (scope.validation[ctrl.$name](viewValue)) {
-        //   ctrl.$setValidity('pwd', true);
-        // }
-        // console.log(viewValue);
+        return viewValue;
       });
     }
   };

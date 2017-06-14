@@ -1,23 +1,25 @@
 <div class="row">
-  <div class="columns large-12">
-    <label>
-    Name
-    </label>
-    <input type="text" name="name" ng-model="model.name">
-    <p class="form-error is-visible"
-     ng-show="userReg.name.$touched && userReg.name.$error.required">
-     Name is required.
-    </p>
-  </div>
+  <form novalidate name="myForm">
+    <div class="columns large-12">
+      <label>
+      Name
+      </label>
+      <input type="text" name="name" ng-model="model.name">
+      <p class="form-error is-visible"
+       ng-show="userReg.name.$touched && userReg.name.$error.required">
+       Name is required.
+      </p>
+    </div>
 
-  <div class="columns large-12">
-    <label>
-    Work
-    </label>
-    <input type="text" name="work" ng-model="model.work" form-step-validity validation="validation.work"/>
-    <p class="form-error is-visible"
-     ng-show="userReg.work.$touched && userReg.work.$error.required">
-     Name is required.
-    </p>
-  </div>
+    <div class="columns large-12">
+      <label>
+      Work
+      </label>
+      <input type="text" name="work" ng-model="model.work" form-step-validity validation="validation.work"/>
+      <p class="form-error is-visible"
+       ng-show="myForm.work.$error.formStepValidity">
+       Name is required.
+      </p>
+    </div>
+  </form>
 </div>
