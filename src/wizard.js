@@ -207,8 +207,8 @@ angular.module('wizard', [])
     require: '^formWizard',
     templateUrl: 'control-panel.html',
     scope: {
-      onCancel: '&onCancel',
-      onSubmit: '&onSubmit'
+      onCancel: '&?',
+      onSubmit: '&?'
     },
     link: function (scope, elements, attrs, ctrl) {
       var stepsLength = ctrl.steps.length;
@@ -229,6 +229,7 @@ angular.module('wizard', [])
 
       scope.control = function (action) {
         var currentStep = wizardService.currentStep;
+        console.log(scope);
 
         if (action === 'prev') {
           if (currentStep > 0) {

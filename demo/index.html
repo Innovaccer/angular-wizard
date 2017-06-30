@@ -30,7 +30,7 @@
         <div class="columns large-12">
           <form-wizard steps="steps">
             <steps></steps>
-            <control-panel on-cancel="" on-submit=""></control-panel>
+            <control-panel></control-panel>
           </form-wizard>
         </div>
       </div>
@@ -70,21 +70,9 @@
     })
     .controller ('ProfileController', function ($scope) {
       $scope.model = {};
-
-      $scope.validation = {
-        work: function (n) {
-          return n.length > 2;
-        }
-      };
     })
     .controller ('InterestController', function ($scope) {
       $scope.model = {};
-
-      $scope.validation = {
-        interest : function (n) {
-          return n.length > 2;
-        }
-      };
     });
   </script>
 </html>
