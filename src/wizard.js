@@ -101,7 +101,7 @@ angular.module('wizard', [])
 
 
   /**
-   * Models
+   * Form validations
    */
   this.formValidationStatus = true;
   this.formValidation = function (validity) {
@@ -111,27 +111,6 @@ angular.module('wizard', [])
   this.getFormValidation = function () {
     return this.formValidationStatus;
   };
-  //
-  // this.setValidation = function (name, validation) {
-  //   this.validation[name] = validation;
-  // };
-  //
-  // this.deleteValidation = function () {
-  //   this.validation = {};
-  // };
-  //
-  // this.checkModel = function () {
-  //   var deferred = $q.defer();
-  //   var bool = Object.values(this.validation).every(function (o) {
-  //     return o === true;
-  //   });
-  //   if (bool) {
-  //     deferred.resolve(bool);
-  //   } else {
-  //     deferred.reject();
-  //   }
-  //   return deferred.promise;
-  // };
 })
 
 .directive('formWizard', function (wizardService) {
@@ -253,6 +232,8 @@ angular.module('wizard', [])
 
         if (action === 'prev') {
           if (currentStep > 0) {
+            // Saves data
+            ctrl.saveData();
             wizardService.stepDecrement();
             loadTemplate(wizardService.currentStep);
           }
@@ -260,12 +241,12 @@ angular.module('wizard', [])
 
         if (action === 'next') {
           if (currentStep < stepsLength - 1) {
+            // Saves data
+            ctrl.saveData();
             wizardService.stepIncrement();
             loadTemplate(wizardService.currentStep);
           }
         }
-        // Saves data
-        ctrl.saveData();
       };
     }
   };

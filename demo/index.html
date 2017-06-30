@@ -58,7 +58,7 @@
       },
       {
         name: 'Interests',
-        template : '<h1>form-interests.html</h1>'
+        templateUrl : 'interest.html'
       },
       {
         name: 'Submit',
@@ -70,7 +70,6 @@
     })
     .controller ('ProfileController', function ($scope) {
       $scope.model = {};
-      $scope.model.data = {};
 
       $scope.validation = {
         work: function (n) {

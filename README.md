@@ -1,12 +1,49 @@
-# `angular-module-boilerplate` — the simple scaffloding for a module
-This project is an application skeleton for a typical angular module. You can use it
-to quickly bootstrap your angular modules.
+# `angular-wizard` — the multistep form
+It's a wizard package to make **Multistep view** and **Multistep forms**.
 
-## Getting Started
-
-To get you started you can simply clone the `angular-module-boilerplate` repository and install the dependencies:
+## Featues
+- Simple Directive flow.
+- Easy validation for forms.
+- Pass your template, scope and controller.
 
 ### Prerequisites
+- Angular JS 1.5.x
+
+### Uses
+
+#### Setting it up
+```
+<form-wizard steps="steps">
+  <steps></steps>
+  <control-panel></control-panel>
+</form-wizard>
+```
+
+You can remove steps or control panel if you want to customize it.
+
+Pass steps as follows:
+```
+$scope.steps = [{
+  name: 'Profile',
+  templateUrl : 'profile.html',
+  controller: 'ProfileController',
+  scope : $scope
+},
+{
+  name: 'Interests',
+  template : '<h1>form-interests</h1>'
+},
+{
+  name: 'Submit',
+  template : '<h1>form-submit</h1>',
+  controller: 'ProfileController',
+  scope : $scope
+}
+];
+```
+
+#### Getting Data
+pass `$scope.model` object to bind your data to `wizardService`. You can get your data by accessing `wizardService.data`.
 
 #### Clone `angular-module-boilerplate`
 
