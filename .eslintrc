@@ -1,25 +1,28 @@
 {
   "strict": "global",
   "extends": "airbnb-base/legacy",
+  "ecmaFeatures": {
+    "globalReturn": true,
+    "jsx": true,
+    "modules": true
+  },
+  "env": {
+    "browser": true,
+    "es6": true,
+    "node": true
+  },
   "globals": {
-    // Angular
-    "angular": false,
-
-    // Angular mocks
-    "module": false,
-    "inject": false,
-
-    // Jasmine
-    "jasmine": false,
-    "describe": false,
-    "beforeEach": false,
-    "afterEach": false,
-    "it": false,
-    "expect": false,
-
-    // Protractor
-    "browser": false,
-    "element": false,
-    "by": false
-  }
+    "document": false,
+    "escape": false,
+    "navigator": false,
+    "unescape": false,
+    "window": false,
+    "describe": true,
+    "before": true,
+    "it": true,
+    "expect": true,
+    "sinon": true
+  },
+  "parser": "babel-eslint",
+  "plugins": []
 }
