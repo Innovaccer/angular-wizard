@@ -1,0 +1,17 @@
+.wizard-container .large-centered {
+  padding: 0px; }
+  .wizard-container .large-centered .wizard-header {
+    padding: 15px;
+    background-color: #f7f7f7; }
+  .wizard-container .large-centered .steps {
+    padding-top: 10px; }
+  .wizard-container .large-centered .equidistant {
+    display: inline-block;
+    width: 24%;
+    text-align: center; }
+  .wizard-container .large-centered .wizard-body {
+    padding: 10px; }
+  .wizard-container .large-centered .wizard-footer {
+    padding: 10px; }
+
+/*# sourceMappingURL=main.css.map*/
