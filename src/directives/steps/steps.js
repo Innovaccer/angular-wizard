@@ -1,8 +1,10 @@
+import template from './steps.html';
+
 function steps(wizard) {
   return {
     restrict: 'E',
     require: '^formWizard',
-    templateUrl: 'steps.html',
+    template: template,
     link: function (scope, element, attrs, ctrl) {
       /**
        * loadTemplate- wrapper for loadTemplate in parent controller

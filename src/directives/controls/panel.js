@@ -1,8 +1,10 @@
-function controlPanel(wizard) {
+import template from './panel.html';
+
+function panel(wizard) {
   return {
     restrict: 'E',
     require: '^formWizard',
-    templateUrl: 'panel.html',
+    template: template,
     scope: {
       onCancel: '&?',
       onSubmit: '&?'
@@ -49,4 +51,4 @@ function controlPanel(wizard) {
   };
 }
 
-export default ['wizard', controlPanel];
+export default ['wizard', panel];

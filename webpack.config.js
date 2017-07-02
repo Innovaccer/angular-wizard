@@ -2,7 +2,7 @@ const webpack = require('webpack');
 const UglifyJsPlugin = webpack.optimize.UglifyJsPlugin;
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const extractSass = new ExtractTextPlugin({
-  filename: '[name].[contenthash].css'
+  filename: '[name].css'
 });
 const path = require('path');
 const env = require('yargs').argv.env; // use --env with webpack 2
@@ -50,6 +50,14 @@ const config = {
           // use style-loader in development
           fallback: 'style-loader'
         })
+      }, {
+        test: /\.html$/,
+        use: [{
+          loader: 'html-loader',
+          options: {
+            minimize: true
+          }
+        }]
       }
     ]
   },

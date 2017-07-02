@@ -23,6 +23,8 @@ function wizard($q, $rootScope, $templateRequest, $compile, $controller) {
     return deferred.promise;
   };
 
+  var self = this;
+
   /**
    * compileTemplate - compile template with controller and scope
    *
@@ -101,11 +103,11 @@ function wizard($q, $rootScope, $templateRequest, $compile, $controller) {
    */
   this.formValidationStatus = true;
   this.formValidation = function (validity) {
-    this.formValidationStatus = validity;
+    self.formValidationStatus = validity;
   };
 
   this.getFormValidation = function () {
-    return this.formValidationStatus;
+    return self.formValidationStatus;
   };
 }
 

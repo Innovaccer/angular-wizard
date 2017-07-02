@@ -1,14 +1,20 @@
+/**
+ *
+ */
+
+import template from './container.html';
+
 function container(wizard) {
   return {
     restrict: 'E',
-    templateUrl: 'wizard-directive.html',
+    template: template,
     scope: {
       steps: '=',
       formName: '@'
     },
     transclude: {
       steps: '?steps',
-      controls: '?controlPanel'
+      controls: '?controls'
     },
     controller: ['$element', function ($element) {
       var templateScope = null;
