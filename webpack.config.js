@@ -2,7 +2,7 @@ const webpack = require('webpack');
 const UglifyJsPlugin = webpack.optimize.UglifyJsPlugin;
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const extractSass = new ExtractTextPlugin({
-  filename: '[name].css'
+  filename: 'style.css'
 });
 const path = require('path');
 const env = require('yargs').argv.env; // use --env with webpack 2
