@@ -23,33 +23,34 @@
     "eslint-plugin-import": "^2.2.0",
     "extract-text-webpack-plugin": "2.1.2",
     "html-loader": "0.4.5",
-    "jest": "20.0.4",
+    "istanbul-instrumenter-loader": "2.0.0",
+    "jasmine-core": "2.6.4",
+    "karma": "1.7.0",
+    "karma-coverage": "1.1.1",
+    "karma-jasmine": "1.1.0",
+    "karma-phantomjs-launcher": "1.0.4",
+    "karma-sourcemap-loader": "0.3.7",
+    "karma-spec-reporter": "0.0.26",
+    "karma-webpack": "2.0.1",
     "node-sass": "4.5.3",
     "path": "0.12.7",
+    "phantomjs-prebuilt": "2.1.14",
     "sass-loader": "6.0.6",
     "style-loader": "0.18.2",
     "webpack": "2.6.1",
+    "webpack-dev-server": "2.5.0",
     "yargs": "8.0.2"
   },
   "scripts": {
     "update-deps": "npm update",
     "prestart": "npm install",
     "start": "http-server -a localhost -p 8000 -c-1 ./demo",
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "test:ci": "jest --runInBand",
+    "test": "karma start",
+    "test-watch": "karma start --auto-watch --no-single-run",
     "build": "webpack --env build",
     "dev": "webpack --progress --colors --watch --env dev"
   },
   "dependencies": {
     "angular": "1.6.4"
-  },
-  "jest": {
-    "verbose": true,
-    "collectCoverage": true,
-    "moduleDirectories": [
-      "node_modules",
-      "src"
-    ]
   }
 }

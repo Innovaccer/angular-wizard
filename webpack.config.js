@@ -33,6 +33,12 @@ const config = {
     libraryTarget: 'umd',
     umdNamedDefine: true
   },
+  /**
+   * Loaders
+   * Reference: http://webpack.github.io/docs/configuration.html#module-loaders
+   * List: http://webpack.github.io/docs/list-of-loaders.html
+   * This handles most of the magic responsible for converting modules
+   */
   module: {
     rules: [
       {
@@ -50,7 +56,12 @@ const config = {
           // use style-loader in development
           fallback: 'style-loader'
         })
-      }, {
+      },
+      /**
+       * HTML Loader
+       * Ref: https://github.com/webpack-contrib/html-loader#examples
+       */
+      {
         test: /\.html$/,
         use: [{
           loader: 'html-loader',
@@ -65,7 +76,16 @@ const config = {
     modules: [path.resolve('./src'), 'node_modules'],
     extensions: ['.js', '.scss']
   },
-  plugins: plugins
+  plugins: plugins,
+  /**
+   * Dev server configuration
+   * Reference: http://webpack.github.io/docs/configuration.html#devserver
+   * Reference: http://webpack.github.io/docs/webpack-dev-server.html
+   */
+  devServer: {
+    contentBase: './demo',
+    stats: 'minimal'
+  }
 };
 
 module.exports = config;
