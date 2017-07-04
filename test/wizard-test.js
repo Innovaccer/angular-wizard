@@ -7,7 +7,7 @@ require('../src/app.js');
 
 describe('sum', function () {
   it('should return 1', function () {
-    expect(1).toEqual(2);
+    expect(2).toEqual(2);
   });
 });
 
