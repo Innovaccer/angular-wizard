@@ -87,13 +87,33 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _app = __webpack_require__(4);
+var _angular = __webpack_require__(4);
+
+var _angular2 = _interopRequireDefault(_angular);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var app = _angular2.default.module('wizard', []);
+
+exports.default = app;
+module.exports = exports['default'];
+
+/***/ }),
+/* 1 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _app = __webpack_require__(0);
 
 var _app2 = _interopRequireDefault(_app);
 
-var _wizard = __webpack_require__(9);
-
-var _wizard2 = _interopRequireDefault(_wizard);
+__webpack_require__(9);
 
 var _container = __webpack_require__(5);
 
@@ -116,19 +136,19 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 /**
  * Created by Ayush Sharma
  */
-_app2.default.service('wizard', _wizard2.default).directive('formWizard', _container2.default).directive('controls', _panel2.default).directive('steps', _steps2.default).directive('formStepValidity', _validation2.default);
+_app2.default.directive('formWizard', _container2.default).directive('controls', _panel2.default).directive('steps', _steps2.default).directive('formStepValidity', _validation2.default);
 
 exports.default = _app2.default;
 module.exports = exports['default'];
 
 /***/ }),
-/* 1 */
+/* 2 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 2 */
+/* 3 */
 /***/ (function(module, exports) {
 
 /**
@@ -33505,34 +33525,12 @@ $provide.value("$locale", {
 !window.angular.$$csp().noInlineStyle && window.angular.element(document.head).prepend('<style type="text/css">@charset "UTF-8";[ng\\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak,.ng-hide:not(.ng-hide-animate){display:none !important;}ng\\:form{display:block;}.ng-animate-shim{visibility:hidden;}.ng-anchor{position:absolute;}</style>');
 
 /***/ }),
-/* 3 */
-/***/ (function(module, exports, __webpack_require__) {
-
-__webpack_require__(2);
-module.exports = angular;
-
-
-/***/ }),
 /* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
+__webpack_require__(3);
+module.exports = angular;
 
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _angular = __webpack_require__(3);
-
-var _angular2 = _interopRequireDefault(_angular);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var app = _angular2.default.module('wizard', []);
-
-exports.default = app;
-module.exports = exports['default'];
 
 /***/ }),
 /* 5 */
@@ -33770,7 +33768,14 @@ module.exports = exports['default'];
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-function wizard($q, $rootScope, $templateRequest, $compile, $controller) {
+
+var _app = __webpack_require__(0);
+
+var _app2 = _interopRequireDefault(_app);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function wizardService($q, $rootScope, $templateRequest, $compile, $controller) {
   /**
    * getTemplate - Get template
    *
@@ -33792,6 +33797,10 @@ function wizard($q, $rootScope, $templateRequest, $compile, $controller) {
       deferred.reject('No template or templateUrl has been specified.');
     }
     return deferred.promise;
+  };
+
+  var checkStep = function checkStep(step) {
+    return angular.isNumber(step) && step > -1;
   };
 
   var self = this;
@@ -33830,15 +33839,26 @@ function wizard($q, $rootScope, $templateRequest, $compile, $controller) {
   this.data = {};
 
   this.setData = function (step, payload) {
-    this.data[step] = payload;
+    if (checkStep(step) && angular.isDefined(payload)) {
+      this.data[step] = payload;
+      return payload;
+    }
+    throw new Error('req: step, payload');
   };
 
-  this.getData = function () {
-    return this.data;
+  this.getData = function (step) {
+    if (checkStep(step)) {
+      return this.data[step];
+    }
+    throw new Error('req: step to be defined');
   };
 
   this.removeData = function (step) {
-    delete this.data[step];
+    if (checkStep(step)) {
+      delete this.data[step];
+      return step;
+    }
+    throw new Error('req: step to be defined');
   };
 
   this.currentStepData = function () {
@@ -33857,15 +33877,24 @@ function wizard($q, $rootScope, $templateRequest, $compile, $controller) {
   * @param  {string} action      next/prev
   */
   this.updateStep = function (index) {
-    this.currentStep = index;
+    if (angular.isNumber(index) && index > -1) {
+      this.currentStep = index;
+      return index;
+    }
+    throw new Error('req: number & > -1');
   };
 
   this.stepIncrement = function () {
     this.currentStep += 1;
+    return this.currentStep;
   };
 
   this.stepDecrement = function () {
-    this.currentStep -= 1;
+    if (this.currentStep > 0) {
+      this.currentStep -= 1;
+      return this.currentStep;
+    }
+    throw new Error('Current step should be > 0');
   };
 
   /**
@@ -33873,13 +33902,19 @@ function wizard($q, $rootScope, $templateRequest, $compile, $controller) {
    */
   this.formValidationStatus = true;
   this.formValidation = function (validity) {
-    self.formValidationStatus = validity;
+    if (validity === true || validity === false) {
+      self.formValidationStatus = validity;
+      return validity;
+    }
+    throw new Error('req: Boolean');
   };
 
   this.getFormValidation = function () {
     return self.formValidationStatus;
   };
 }
+
+var wizard = _app2.default.service('wizard', wizardService);
 
 exports.default = ['$q', '$rootScope', '$templateRequest', '$compile', '$controller', wizard];
 module.exports = exports['default'];
@@ -33906,8 +33941,8 @@ module.exports = "<div id=status-buttons class=text-center> <div class=\"equidis
 /* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(0);
-module.exports = __webpack_require__(1);
+__webpack_require__(1);
+module.exports = __webpack_require__(2);
 
 
 /***/ })

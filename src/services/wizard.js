@@ -1,4 +1,6 @@
-function wizard($q, $rootScope, $templateRequest, $compile, $controller) {
+import app from '../app.js';
+
+function wizardService($q, $rootScope, $templateRequest, $compile, $controller) {
   /**
    * getTemplate - Get template
    *
@@ -21,6 +23,10 @@ function wizard($q, $rootScope, $templateRequest, $compile, $controller) {
       deferred.reject('No template or templateUrl has been specified.');
     }
     return deferred.promise;
+  };
+
+  var checkStep = function (step) {
+    return angular.isNumber(step) && step > -1;
   };
 
   var self = this;
@@ -59,15 +65,26 @@ function wizard($q, $rootScope, $templateRequest, $compile, $controller) {
   this.data = {};
 
   this.setData = function (step, payload) {
-    this.data[step] = payload;
+    if (checkStep(step) && angular.isDefined(payload)) {
+      this.data[step] = payload;
+      return payload;
+    }
+    throw new Error('req: step, payload');
   };
 
-  this.getData = function () {
-    return this.data;
+  this.getData = function (step) {
+    if (checkStep(step)) {
+      return this.data[step];
+    }
+    throw new Error('req: step to be defined');
   };
 
   this.removeData = function (step) {
-    delete this.data[step];
+    if (checkStep(step)) {
+      delete this.data[step];
+      return step;
+    }
+    throw new Error('req: step to be defined');
   };
 
   this.currentStepData = function () {
@@ -87,15 +104,24 @@ function wizard($q, $rootScope, $templateRequest, $compile, $controller) {
   * @param  {string} action      next/prev
   */
   this.updateStep = function (index) {
-    this.currentStep = index;
+    if (angular.isNumber(index) && index > -1) {
+      this.currentStep = index;
+      return index;
+    }
+    throw new Error('req: number & > -1');
   };
 
   this.stepIncrement = function () {
     this.currentStep += 1;
+    return this.currentStep;
   };
 
   this.stepDecrement = function () {
-    this.currentStep -= 1;
+    if (this.currentStep > 0) {
+      this.currentStep -= 1;
+      return this.currentStep;
+    }
+    throw new Error('Current step should be > 0');
   };
 
   /**
@@ -103,13 +129,19 @@ function wizard($q, $rootScope, $templateRequest, $compile, $controller) {
    */
   this.formValidationStatus = true;
   this.formValidation = function (validity) {
-    self.formValidationStatus = validity;
+    if (validity === true || validity === false) {
+      self.formValidationStatus = validity;
+      return validity;
+    }
+    throw new Error('req: Boolean');
   };
 
   this.getFormValidation = function () {
     return self.formValidationStatus;
   };
 }
+
+const wizard = app.service('wizard', wizardService);
 
 export default ['$q', '$rootScope', '$templateRequest', '$compile',
   '$controller', wizard];
