@@ -1,3 +1,7 @@
+[![Build Status](https://travis-ci.org/Innovaccer/angular-wizard.svg?branch=master)](https://travis-ci.org/Innovaccer/angular-wizard)
+
+[![Coverage Status](https://coveralls.io/repos/github/Innovaccer/angular-wizard/badge.svg?branch=master)](https://coveralls.io/github/Innovaccer/angular-wizard?branch=master)
+
 # `angular-wizard` — the multistep form
 It's a wizard package to make **Multistep view** and **Multistep forms**.
 
