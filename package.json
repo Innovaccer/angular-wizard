@@ -17,6 +17,7 @@
     "babel-loader": "7.1.1",
     "babel-plugin-add-module-exports": "0.2.1",
     "babel-preset-es2015": "6.24.1",
+    "coveralls": "2.13.1",
     "css-loader": "0.28.4",
     "eslint": "^3.9.1",
     "eslint-config-airbnb-base": "https://github.com/InnovAccer/eslint-config-airbnb-base.git",
