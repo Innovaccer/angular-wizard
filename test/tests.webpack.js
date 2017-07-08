@@ -1,7 +1,7 @@
 /**
  * Webpack test configuration
  * Reference: https://github.com/webpack-contrib/karma-webpack
- * require all modules ending in "_test" from the
+ * require all modules ending in "-test" from the
  * current directory and all subdirectories
  */
 

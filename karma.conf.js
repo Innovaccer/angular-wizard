@@ -50,7 +50,20 @@ module.exports = function (config) {
       devtool: 'inline-source-map',
       module: {
         loaders: [
-          { test: /\.js$/, loader: 'babel-loader' }
+          { test: /\.js$/, loader: 'babel-loader' },
+          { test: /\.html$/, loader: 'html-loader' },
+          {
+            enforce: 'pre',
+            test: /\.js$/,
+            exclude: [
+              /node_modules/,
+              /\.spec\.js$/
+            ],
+            loader: 'istanbul-instrumenter-loader',
+            query: {
+              esModules: true
+            }
+          }
         ]
       }
     },
@@ -59,6 +72,10 @@ module.exports = function (config) {
       // webpack-dev-middleware configuration
       // i. e.
       stats: 'errors-only'
+    },
+    coverageIstanbulReporter: {
+      reports: ['text-summary'],
+      fixWebpackSourcePaths: true
     }
   });
 };

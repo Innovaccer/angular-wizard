@@ -3,6 +3,7 @@
  */
 
 import template from './container.html';
+import app from '../../app.js';
 
 function container(wizard) {
   return {
@@ -68,4 +69,5 @@ function container(wizard) {
   };
 }
 
-export default ['wizard', container];
+const formWizard = app.directive('formWizard', container);
+export default ['wizard', formWizard];
