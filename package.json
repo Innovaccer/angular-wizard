@@ -23,6 +23,7 @@
     "eslint-plugin-import": "^2.2.0",
     "extract-text-webpack-plugin": "2.1.2",
     "html-loader": "0.4.5",
+    "istanbul": "0.4.5",
     "istanbul-instrumenter-loader": "2.0.0",
     "jasmine-core": "2.6.4",
     "karma": "1.7.0",
@@ -45,7 +46,9 @@
     "update-deps": "npm update",
     "prestart": "npm install",
     "start": "http-server -a localhost -p 8000 -c-1 ./demo",
+    "pretest": "rm -rf coverage",
     "test": "karma start",
+    "posttest": " cat ./coverage/PhantomJS\\ 2.1.1\\ \\(Linux\\ 0.0.0\\)/lcov.info | ./node_modules/coveralls/bin/coveralls.js",
     "test-watch": "karma start --auto-watch --no-single-run",
     "build": "webpack --env build",
     "dev": "webpack --progress --colors --watch --env dev"
