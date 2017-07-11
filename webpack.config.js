@@ -6,11 +6,19 @@ const extractSass = new ExtractTextPlugin({
 });
 const path = require('path');
 const env = require('yargs').argv.env; // use --env with webpack 2
-
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 let libraryName = 'angular-wizard';
 
-let plugins = [extractSass];
+let plugins = [
+  extractSass,
+  new CopyWebpackPlugin([
+    {
+      from: 'lib/**/*',
+      to: '../demo/'
+    }
+  ])
+];
 let outputFile;
 
 if (env === 'build') {

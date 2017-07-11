@@ -17,6 +17,8 @@
     "babel-loader": "7.1.1",
     "babel-plugin-add-module-exports": "0.2.1",
     "babel-preset-es2015": "6.24.1",
+    "clean-webpack-plugin": "0.1.16",
+    "copy-webpack-plugin": "4.0.1",
     "coveralls": "2.13.1",
     "css-loader": "0.28.4",
     "eslint": "^3.9.1",
@@ -46,7 +48,7 @@
   "scripts": {
     "update-deps": "npm update",
     "prestart": "npm install",
-    "start": "http-server -a localhost -p 8000 -c-1 ./demo",
+    "start": "node_modules/.bin/webpack-dev-server",
     "pretest": "rm -rf coverage",
     "test": "karma start",
     "posttest": " cat ./coverage/PhantomJS\\ 2.1.1\\ \\(Linux\\ 0.0.0\\)/lcov.info | ./node_modules/coveralls/bin/coveralls.js",

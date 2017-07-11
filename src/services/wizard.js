@@ -141,7 +141,4 @@ function wizardService($q, $rootScope, $templateRequest, $compile, $controller) 
   };
 }
 
-const wizard = app.service('wizard', wizardService);
-
-export default ['$q', '$rootScope', '$templateRequest', '$compile',
-  '$controller', wizard];
+export default app.service('wizard', wizardService);

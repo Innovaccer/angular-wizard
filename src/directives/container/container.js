@@ -69,5 +69,4 @@ function container(wizard) {
   };
 }
 
-const formWizard = app.directive('formWizard', container);
-export default ['wizard', formWizard];
+export default app.directive('formWizard', container);
