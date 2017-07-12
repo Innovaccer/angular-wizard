@@ -33654,7 +33654,7 @@ function panel(wizard) {
         ctrl.loadTemplate(ctrl.steps[index], index);
       };
 
-      scope.validation = wizard.getFormValidation.bind(null);
+      scope.validation = wizard.getFormValidation.bind(wizard);
 
       scope.nextStep = function () {
         return wizard.currentStep === stepsLength - 1 || !scope.validation();
@@ -33753,7 +33753,7 @@ function validation(wizard) {
     link: function link(scope, element, attrs, formCtrl) {
       // Watch the form validity
       scope.$watch(function () {
-        wizard.formValidation.call(null, formCtrl.$valid);
+        wizard.formValidation.call(wizard, formCtrl.$valid);
       });
     }
   };
@@ -33773,152 +33773,394 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 var _app = __webpack_require__(0);
 
 var _app2 = _interopRequireDefault(_app);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function wizardService($q, $rootScope, $templateRequest, $compile, $controller) {
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var WizardService = function () {
+  function WizardService($q, $rootScope, $templateRequest, $compile, $controller) {
+    'ngInject';
+
+    // Angular Dependencies
+
+    _classCallCheck(this, WizardService);
+
+    this.$q = $q;
+    this.$rootScope = $rootScope;
+    this.$templateRequest = $templateRequest;
+    this.$compile = $compile;
+    this.$controller = $controller;
+
+    // Service Dependencies
+    this.data = {};
+    this.currentStep = 0;
+    this.formValidationStatus = true;
+  }
+
   /**
-   * getTemplate - Get template
+   * @static checkStep - validate step as an integer
    *
-   * @param  {string} template
-   * @param  {string} templateUrl
-   * @return {promise}
+   * @param  {type} step input step to validate
+   * @return {boolean}   true/false
    */
-  var getTemplate = function getTemplate(template, templateUrl) {
-    var deferred = $q.defer();
-    if (template) {
-      deferred.resolve(template);
-    } else if (templateUrl) {
-      $templateRequest(templateUrl).then(function (tpl) {
-        deferred.resolve(tpl);
-      }, function (error) {
+
+
+  _createClass(WizardService, [{
+    key: 'getTemplate',
+
+
+    /**
+     * getTemplate - Get template
+     *
+     * @param  {string} template
+     * @param  {string} templateUrl
+     * @return {promise}
+     */
+    value: function getTemplate(template, templateUrl) {
+      var deferred = this.$q.defer();
+      if (template) {
+        deferred.resolve(template);
+      } else if (templateUrl) {
+        this.$templateRequest(templateUrl).then(function (tpl) {
+          deferred.resolve(tpl);
+        }, function (error) {
+          deferred.reject(error);
+        });
+      } else {
+        deferred.reject('No template or templateUrl has been specified.');
+      }
+      return deferred.promise;
+    }
+
+    /**
+     * compileTemplate - compile template with controller and scope
+     *
+     * @param  {object} options contains controller, scope and template
+     * @return {promise} templateElement  compiled template event
+     */
+
+  }, {
+    key: 'compileTemplate',
+    value: function compileTemplate(obj) {
+      var deferred = this.$q.defer();
+      var self = this;
+      this.getTemplate(obj.template, obj.templateUrl).then(function (template) {
+        var scope = (obj.scope || self.$rootScope).$new();
+        var templateElement = self.$compile(template)(scope);
+        // inject controller
+        if (obj.controller) {
+          self.$controller(obj.controller, {
+            $scope: scope
+          });
+        }
+        deferred.resolve({
+          template: templateElement,
+          scope: scope
+        });
+      }).catch(function (error) {
         deferred.reject(error);
       });
-    } else {
-      deferred.reject('No template or templateUrl has been specified.');
+
+      return deferred.promise;
     }
-    return deferred.promise;
-  };
 
-  var checkStep = function checkStep(step) {
-    return angular.isNumber(step) && step > -1;
-  };
+    /**
+     * setData - description
+     *
+     * @param  {type} step    description
+     * @param  {type} payload description
+     * @return {type}         description
+     */
 
-  var self = this;
-
-  /**
-   * compileTemplate - compile template with controller and scope
-   *
-   * @param  {object} options contains controller, scope and template
-   * @return {promise} templateElement  compiled template event
-   */
-  this.compileTemplate = function (obj) {
-    var deferred = $q.defer();
-    getTemplate(obj.template, obj.templateUrl).then(function (template) {
-      var scope = (obj.scope || $rootScope).$new();
-      var templateElement = $compile(template)(scope);
-      // Inject controller
-      if (obj.controller) {
-        $controller(obj.controller, {
-          $scope: scope
-        });
+  }, {
+    key: 'setData',
+    value: function setData(step, payload) {
+      if (this.constructor.checkStep(step) && angular.isDefined(payload)) {
+        this.data[step] = payload;
+        return payload;
       }
-      deferred.resolve({
-        template: templateElement,
-        scope: scope
-      });
-    }).catch(function (error) {
-      deferred.reject(error);
-    });
-
-    return deferred.promise;
-  };
-
-  /**
-   * Wizard form data
-   */
-  this.data = {};
-
-  this.setData = function (step, payload) {
-    if (checkStep(step) && angular.isDefined(payload)) {
-      this.data[step] = payload;
-      return payload;
+      throw new Error('req: step, payload');
     }
-    throw new Error('req: step, payload');
-  };
 
-  this.getData = function (step) {
-    if (checkStep(step)) {
-      return this.data[step];
+    /**
+     * getData - description
+     *
+     * @param  {type} step description
+     * @return {type}      description
+     */
+
+  }, {
+    key: 'getData',
+    value: function getData(step) {
+      if (this.constructor.checkStep(step)) {
+        return this.data[step];
+      }
+      throw new Error('req: step to be defined');
     }
-    throw new Error('req: step to be defined');
-  };
 
-  this.removeData = function (step) {
-    if (checkStep(step)) {
-      delete this.data[step];
-      return step;
+    /**
+     * removeData - description
+     *
+     * @param  {type} step description
+     * @return {type}      description
+     */
+
+  }, {
+    key: 'removeData',
+    value: function removeData(step) {
+      if (this.constructor.checkStep(step)) {
+        delete this.data[step];
+        return step;
+      }
+      throw new Error('req: step to be defined');
     }
-    throw new Error('req: step to be defined');
-  };
 
-  this.currentStepData = function () {
-    return this.data[this.currentStep];
-  };
+    /**
+     * currentStepData - description
+     *
+     * @return {type}  description
+     */
 
-  /**
-   * Wizard form data in steps.
-   */
-  this.currentStep = 0; // intializes it with first step.
-
-  /**
-  * updateStep - update the current step of the wizard
-  *
-  * @param  {number} currentStep currentStep
-  * @param  {string} action      next/prev
-  */
-  this.updateStep = function (index) {
-    if (angular.isNumber(index) && index > -1) {
-      this.currentStep = index;
-      return index;
+  }, {
+    key: 'currentStepData',
+    value: function currentStepData() {
+      return this.data[this.currentStep];
     }
-    throw new Error('req: number & > -1');
-  };
 
-  this.stepIncrement = function () {
-    this.currentStep += 1;
-    return this.currentStep;
-  };
+    /**
+    * updateStep - update the current step of the wizard
+    *
+    * @param  {number} currentStep currentStep
+    * @param  {string} action      next/prev
+    */
 
-  this.stepDecrement = function () {
-    if (this.currentStep > 0) {
-      this.currentStep -= 1;
+  }, {
+    key: 'updateStep',
+    value: function updateStep(index) {
+      if (angular.isNumber(index) && index > -1) {
+        this.currentStep = index;
+        return index;
+      }
+      throw new Error('req: number & > -1');
+    }
+
+    /**
+     * stepIncrement - description
+     *
+     * @return {type}  description
+     */
+
+  }, {
+    key: 'stepIncrement',
+    value: function stepIncrement() {
+      this.currentStep += 1;
       return this.currentStep;
     }
-    throw new Error('Current step should be > 0');
-  };
 
-  /**
-   * Form validations
-   */
-  this.formValidationStatus = true;
-  this.formValidation = function (validity) {
-    if (validity === true || validity === false) {
-      self.formValidationStatus = validity;
-      return validity;
+    /**
+     * stepDecrement - description
+     *
+     * @return {type}  description
+     */
+
+  }, {
+    key: 'stepDecrement',
+    value: function stepDecrement() {
+      if (this.currentStep > 0) {
+        this.currentStep -= 1;
+        return this.currentStep;
+      }
+      throw new Error('Current step should be > 0');
     }
-    throw new Error('req: Boolean');
-  };
 
-  this.getFormValidation = function () {
-    return self.formValidationStatus;
-  };
-}
+    /**
+     * formValidation - description
+     *
+     * @param  {type} validity description
+     * @return {type}          description
+     */
 
-exports.default = _app2.default.service('wizard', wizardService);
+  }, {
+    key: 'formValidation',
+    value: function formValidation(validity) {
+      if (validity === true || validity === false) {
+        this.formValidationStatus = validity;
+        return validity;
+      }
+      throw new Error('req: Boolean');
+    }
+
+    /**
+     * getFormValidation - description
+     *
+     * @return {type}  description
+     */
+
+  }, {
+    key: 'getFormValidation',
+    value: function getFormValidation() {
+      return this.formValidationStatus;
+    }
+  }], [{
+    key: 'checkStep',
+    value: function checkStep(step) {
+      return angular.isNumber(step) && step > -1;
+    }
+  }]);
+
+  return WizardService;
+}();
+
+// function wizardService($q, $rootScope, $templateRequest, $compile, $controller) {
+//   /**
+//    * getTemplate - Get template
+//    *
+//    * @param  {string} template
+//    * @param  {string} templateUrl
+//    * @return {promise}
+//    */
+//   var getTemplate = function (template, templateUrl) {
+//     var deferred = $q.defer();
+//     if (template) {
+//       deferred.resolve(template);
+//     } else if (templateUrl) {
+//       $templateRequest(templateUrl)
+//         .then(function (tpl) {
+//           deferred.resolve(tpl);
+//         }, function (error) {
+//           deferred.reject(error);
+//         });
+//     } else {
+//       deferred.reject('No template or templateUrl has been specified.');
+//     }
+//     return deferred.promise;
+//   };
+//
+//   var checkStep = function (step) {
+//     return angular.isNumber(step) && step > -1;
+//   };
+//
+//   var self = this;
+//
+//   /**
+//    * compileTemplate - compile template with controller and scope
+//    *
+//    * @param  {object} options contains controller, scope and template
+//    * @return {promise} templateElement  compiled template event
+//    */
+//   this.compileTemplate = function (obj) {
+//     var deferred = $q.defer();
+//     getTemplate(obj.template, obj.templateUrl).then(function (template) {
+//       var scope = (obj.scope || $rootScope).$new();
+//       var templateElement = $compile(template)(scope);
+//       // Inject controller
+//       if (obj.controller) {
+//         $controller(obj.controller, {
+//           $scope: scope
+//         });
+//       }
+//       deferred.resolve({
+//         template: templateElement,
+//         scope: scope
+//       });
+//     }).catch(function (error) {
+//       deferred.reject(error);
+//     });
+//
+//     return deferred.promise;
+//   };
+//
+//   /**
+//    * Wizard form data
+//    */
+//   this.data = {};
+//
+//   this.setData = function (step, payload) {
+//     if (checkStep(step) && angular.isDefined(payload)) {
+//       this.data[step] = payload;
+//       return payload;
+//     }
+//     throw new Error('req: step, payload');
+//   };
+//
+//   this.getData = function (step) {
+//     if (checkStep(step)) {
+//       return this.data[step];
+//     }
+//     throw new Error('req: step to be defined');
+//   };
+//
+//   this.removeData = function (step) {
+//     if (checkStep(step)) {
+//       delete this.data[step];
+//       return step;
+//     }
+//     throw new Error('req: step to be defined');
+//   };
+//
+//   this.currentStepData = function () {
+//     return this.data[this.currentStep];
+//   };
+//
+//
+//   /**
+//    * Wizard form data in steps.
+//    */
+//   this.currentStep = 0; // intializes it with first step.
+//
+//   /**
+//   * updateStep - update the current step of the wizard
+//   *
+//   * @param  {number} currentStep currentStep
+//   * @param  {string} action      next/prev
+//   */
+//   this.updateStep = function (index) {
+//     if (angular.isNumber(index) && index > -1) {
+//       this.currentStep = index;
+//       return index;
+//     }
+//     throw new Error('req: number & > -1');
+//   };
+//
+//   this.stepIncrement = function () {
+//     this.currentStep += 1;
+//     return this.currentStep;
+//   };
+//
+//   this.stepDecrement = function () {
+//     if (this.currentStep > 0) {
+//       this.currentStep -= 1;
+//       return this.currentStep;
+//     }
+//     throw new Error('Current step should be > 0');
+//   };
+//
+//   /**
+//    * Form validations
+//    */
+//   this.formValidationStatus = true;
+//   this.formValidation = function (validity) {
+//     if (validity === true || validity === false) {
+//       self.formValidationStatus = validity;
+//       return validity;
+//     }
+//     throw new Error('req: Boolean');
+//   };
+//
+//   this.getFormValidation = function () {
+//     return self.formValidationStatus;
+//   };
+// }
+//
+
+
+exports.default = _app2.default.service('wizard', WizardService);
 module.exports = exports['default'];
 
 /***/ }),

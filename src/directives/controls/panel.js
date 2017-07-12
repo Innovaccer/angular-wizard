@@ -15,7 +15,7 @@ function panel(wizard) {
         ctrl.loadTemplate(ctrl.steps[index], index);
       };
 
-      scope.validation = wizard.getFormValidation.bind(null);
+      scope.validation = wizard.getFormValidation.bind(wizard);
 
       scope.nextStep = function () {
         return wizard.currentStep === stepsLength - 1 ||

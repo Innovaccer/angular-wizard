@@ -17,8 +17,8 @@ describe('wizard service', function () {
 
   it('Wizard: should be defined and contains methods', function () {
     expect(wizard).toBeDefined();
-    // Wizard service contains 13 methods
-    expect(Object.keys(wizard).length).toEqual(13);
+    // Wizard service contains 8 methods
+    expect(Object.keys(wizard).length).toEqual(8);
     expect(wizard.currentStep).toEqual(0);
   });
 

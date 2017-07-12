@@ -47,7 +47,6 @@
   },
   "scripts": {
     "update-deps": "npm update",
-    "prestart": "npm install",
     "start": "node_modules/.bin/webpack-dev-server",
     "pretest": "rm -rf coverage",
     "test": "karma start",

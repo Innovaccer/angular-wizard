@@ -5,7 +5,7 @@ function validation(wizard) {
     link: function (scope, element, attrs, formCtrl) {
       // Watch the form validity
       scope.$watch(function () {
-        wizard.formValidation.call(null, formCtrl.$valid);
+        wizard.formValidation.call(wizard, formCtrl.$valid);
       });
     }
   };
