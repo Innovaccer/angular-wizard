@@ -77,6 +77,17 @@ const config = {
             minimize: true
           }
         }]
+      },
+
+      /**
+       * Remove Flow Type Loader
+       * Ref: https://github.com/conorhastings/remove-flow-types-loader
+       */
+      {
+        test: /\.jsx?$/,
+        enforce: 'pre',
+        use: ['remove-flow-types-loader'],
+        include: path.join(__dirname, 'src')
       }
     ]
   },
