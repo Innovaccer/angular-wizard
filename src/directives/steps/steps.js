@@ -9,8 +9,8 @@ function steps(wizard) {
       /**
        * loadTemplate- wrapper for loadTemplate in parent controller
        *
-       * @param  {object} obj description
-       * @param  {number} idx description
+       * @param  {object} obj template info
+       * @param  {number} idx step number
        */
       scope.loadTemplate = function (obj, idx) {
         var currentStep = wizard.currentStep;

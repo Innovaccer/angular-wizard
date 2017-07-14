@@ -1,6 +1,36 @@
+/**
+ * WizardService
+ */
+
 import app from '../app.js';
 
-function wizardService($q, $rootScope, $templateRequest, $compile, $controller) {
+class WizardService {
+  constructor($q, $rootScope, $templateRequest, $compile, $controller) {
+    'ngInject';
+
+    // Angular Dependencies
+    this.$q = $q;
+    this.$rootScope = $rootScope;
+    this.$templateRequest = $templateRequest;
+    this.$compile = $compile;
+    this.$controller = $controller;
+
+    // Service Dependencies
+    this.data = {};
+    this.currentStep = 0;
+    this.formValidationStatus = true;
+  }
+
+  /**
+   * @static checkStep - validate step as an integer
+   *
+   * @param  {type} step input step to validate
+   * @return {boolean}   true/false
+   */
+  static checkStep(step) {
+    return angular.isNumber(step) && step > -1;
+  }
+
   /**
    * getTemplate - Get template
    *
@@ -8,12 +38,12 @@ function wizardService($q, $rootScope, $templateRequest, $compile, $controller) 
    * @param  {string} templateUrl
    * @return {promise}
    */
-  var getTemplate = function (template, templateUrl) {
-    var deferred = $q.defer();
+  getTemplate(template, templateUrl) {
+    const deferred = this.$q.defer();
     if (template) {
       deferred.resolve(template);
     } else if (templateUrl) {
-      $templateRequest(templateUrl)
+      this.$templateRequest(templateUrl)
         .then(function (tpl) {
           deferred.resolve(tpl);
         }, function (error) {
@@ -23,13 +53,7 @@ function wizardService($q, $rootScope, $templateRequest, $compile, $controller) 
       deferred.reject('No template or templateUrl has been specified.');
     }
     return deferred.promise;
-  };
-
-  var checkStep = function (step) {
-    return angular.isNumber(step) && step > -1;
-  };
-
-  var self = this;
+  }
 
   /**
    * compileTemplate - compile template with controller and scope
@@ -37,14 +61,15 @@ function wizardService($q, $rootScope, $templateRequest, $compile, $controller) 
    * @param  {object} options contains controller, scope and template
    * @return {promise} templateElement  compiled template event
    */
-  this.compileTemplate = function (obj) {
-    var deferred = $q.defer();
-    getTemplate(obj.template, obj.templateUrl).then(function (template) {
-      var scope = (obj.scope || $rootScope).$new();
-      var templateElement = $compile(template)(scope);
-      // Inject controller
+  compileTemplate(obj) {
+    const deferred = this.$q.defer();
+    const self = this;
+    this.getTemplate(obj.template, obj.templateUrl).then(function (template) {
+      var scope = (obj.scope || self.$rootScope).$new();
+      var templateElement = self.$compile(template)(scope);
+      // inject controller
       if (obj.controller) {
-        $controller(obj.controller, {
+        self.$controller(obj.controller, {
           $scope: scope
         });
       }
@@ -57,88 +82,120 @@ function wizardService($q, $rootScope, $templateRequest, $compile, $controller) 
     });
 
     return deferred.promise;
-  };
+  }
+
 
   /**
-   * Wizard form data
+   * setData - set data in model for that step
+   *
+   * @param  {number} step    step number
+   * @param  {object} payload data
+   * @return {object}           updated data
    */
-  this.data = {};
-
-  this.setData = function (step, payload) {
-    if (checkStep(step) && angular.isDefined(payload)) {
+  setData(step, payload) {
+    if (this.constructor.checkStep(step) && angular.isDefined(payload)) {
       this.data[step] = payload;
       return payload;
     }
     throw new Error('req: step, payload');
-  };
+  }
 
-  this.getData = function (step) {
-    if (checkStep(step)) {
+  /**
+   * getData - get data for a step, stored in model
+   *
+   * @param  {number} step step number
+   * @return {object}      data for that step
+   */
+  getData(step) {
+    if (this.constructor.checkStep(step)) {
       return this.data[step];
     }
     throw new Error('req: step to be defined');
-  };
+  }
 
-  this.removeData = function (step) {
-    if (checkStep(step)) {
+  /**
+   * removeData - delete data from model.
+   *
+   * @param  {number} step step number
+   * @return {number}      step number
+   */
+  removeData(step) {
+    if (this.constructor.checkStep(step)) {
       delete this.data[step];
       return step;
     }
     throw new Error('req: step to be defined');
-  };
-
-  this.currentStepData = function () {
-    return this.data[this.currentStep];
-  };
-
+  }
 
   /**
-   * Wizard form data in steps.
+   * currentStepData - return current step data from model.
+   *
+   * @return {object} step data from model
    */
-  this.currentStep = 0; // intializes it with first step.
+  currentStepData() {
+    return this.data[this.currentStep];
+  }
 
   /**
   * updateStep - update the current step of the wizard
   *
   * @param  {number} currentStep currentStep
   * @param  {string} action      next/prev
+  * @return {number} updated step
   */
-  this.updateStep = function (index) {
+  updateStep(index) {
     if (angular.isNumber(index) && index > -1) {
       this.currentStep = index;
       return index;
     }
     throw new Error('req: number & > -1');
-  };
+  }
 
-  this.stepIncrement = function () {
+  /**
+   * stepIncrement - increment step by 1.
+   *
+   * @return {numer}  updated step
+   */
+  stepIncrement() {
     this.currentStep += 1;
     return this.currentStep;
-  };
+  }
 
-  this.stepDecrement = function () {
+  /**
+   * stepDecrement - decrement step by 1
+   *
+   * @return {number} updated step
+   */
+  stepDecrement() {
     if (this.currentStep > 0) {
       this.currentStep -= 1;
       return this.currentStep;
     }
     throw new Error('Current step should be > 0');
-  };
+  }
 
   /**
-   * Form validations
+   * formValidation - store validity for form step validity directive.
+   *
+   * @param  {boolean} validity validity of form of that step
+   * @return {boolean} updated validity.
    */
-  this.formValidationStatus = true;
-  this.formValidation = function (validity) {
+  formValidation(validity) {
     if (validity === true || validity === false) {
-      self.formValidationStatus = validity;
+      this.formValidationStatus = validity;
       return validity;
     }
     throw new Error('req: Boolean');
-  };
+  }
 
-  this.getFormValidation = function () {
-    return self.formValidationStatus;
-  };
+  /**
+   * getFormValidation - get form step validity.
+   *
+   * @return {boolean} form step validity.
+   */
+  getFormValidation() {
+    return this.formValidationStatus;
+  }
 }
 
-export default app.service('wizard', wizardService);
+export default app.service('wizard', WizardService);
