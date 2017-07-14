@@ -1,5 +1,8 @@
-import app from '../app.js';
+/**
+ * WizardService
+ */
 
+import app from '../app.js';
 
 class WizardService {
   constructor($q, $rootScope, $templateRequest, $compile, $controller) {
@@ -83,11 +86,11 @@ class WizardService {
 
 
   /**
-   * setData - description
+   * setData - set data in model for that step
    *
-   * @param  {type} step    description
-   * @param  {type} payload description
-   * @return {type}         description
+   * @param  {number} step    step number
+   * @param  {object} payload data
+   * @return {object}           updated data
    */
   setData(step, payload) {
     if (this.constructor.checkStep(step) && angular.isDefined(payload)) {
@@ -98,10 +101,10 @@ class WizardService {
   }
 
   /**
-   * getData - description
+   * getData - get data for a step, stored in model
    *
-   * @param  {type} step description
-   * @return {type}      description
+   * @param  {number} step step number
+   * @return {object}      data for that step
    */
   getData(step) {
     if (this.constructor.checkStep(step)) {
@@ -111,10 +114,10 @@ class WizardService {
   }
 
   /**
-   * removeData - description
+   * removeData - delete data from model.
    *
-   * @param  {type} step description
-   * @return {type}      description
+   * @param  {number} step step number
+   * @return {number}      step number
    */
   removeData(step) {
     if (this.constructor.checkStep(step)) {
@@ -125,9 +128,9 @@ class WizardService {
   }
 
   /**
-   * currentStepData - description
+   * currentStepData - return current step data from model.
    *
-   * @return {type}  description
+   * @return {object} step data from model
    */
   currentStepData() {
     return this.data[this.currentStep];
@@ -138,6 +141,7 @@ class WizardService {
   *
   * @param  {number} currentStep currentStep
   * @param  {string} action      next/prev
+  * @return {number} updated step
   */
   updateStep(index) {
     if (angular.isNumber(index) && index > -1) {
@@ -148,9 +152,9 @@ class WizardService {
   }
 
   /**
-   * stepIncrement - description
+   * stepIncrement - increment step by 1.
    *
-   * @return {type}  description
+   * @return {numer}  updated step
    */
   stepIncrement() {
     this.currentStep += 1;
@@ -158,9 +162,9 @@ class WizardService {
   }
 
   /**
-   * stepDecrement - description
+   * stepDecrement - decrement step by 1
    *
-   * @return {type}  description
+   * @return {number} updated step
    */
   stepDecrement() {
     if (this.currentStep > 0) {
@@ -171,10 +175,10 @@ class WizardService {
   }
 
   /**
-   * formValidation - description
+   * formValidation - store validity for form step validity directive.
    *
-   * @param  {type} validity description
-   * @return {type}          description
+   * @param  {boolean} validity validity of form of that step
+   * @return {boolean} updated validity.
    */
   formValidation(validity) {
     if (validity === true || validity === false) {
@@ -185,154 +189,13 @@ class WizardService {
   }
 
   /**
-   * getFormValidation - description
+   * getFormValidation - get form step validity.
    *
-   * @return {type}  description
+   * @return {boolean} form step validity.
    */
   getFormValidation() {
     return this.formValidationStatus;
   }
 }
 
-// function wizardService($q, $rootScope, $templateRequest, $compile, $controller) {
-//   /**
-//    * getTemplate - Get template
-//    *
-//    * @param  {string} template
-//    * @param  {string} templateUrl
-//    * @return {promise}
-//    */
-//   var getTemplate = function (template, templateUrl) {
-//     var deferred = $q.defer();
-//     if (template) {
-//       deferred.resolve(template);
-//     } else if (templateUrl) {
-//       $templateRequest(templateUrl)
-//         .then(function (tpl) {
-//           deferred.resolve(tpl);
-//         }, function (error) {
-//           deferred.reject(error);
-//         });
-//     } else {
-//       deferred.reject('No template or templateUrl has been specified.');
-//     }
-//     return deferred.promise;
-//   };
-//
-//   var checkStep = function (step) {
-//     return angular.isNumber(step) && step > -1;
-//   };
-//
-//   var self = this;
-//
-//   /**
-//    * compileTemplate - compile template with controller and scope
-//    *
-//    * @param  {object} options contains controller, scope and template
-//    * @return {promise} templateElement  compiled template event
-//    */
-//   this.compileTemplate = function (obj) {
-//     var deferred = $q.defer();
-//     getTemplate(obj.template, obj.templateUrl).then(function (template) {
-//       var scope = (obj.scope || $rootScope).$new();
-//       var templateElement = $compile(template)(scope);
-//       // Inject controller
-//       if (obj.controller) {
-//         $controller(obj.controller, {
-//           $scope: scope
-//         });
-//       }
-//       deferred.resolve({
-//         template: templateElement,
-//         scope: scope
-//       });
-//     }).catch(function (error) {
-//       deferred.reject(error);
-//     });
-//
-//     return deferred.promise;
-//   };
-//
-//   /**
-//    * Wizard form data
-//    */
-//   this.data = {};
-//
-//   this.setData = function (step, payload) {
-//     if (checkStep(step) && angular.isDefined(payload)) {
-//       this.data[step] = payload;
-//       return payload;
-//     }
-//     throw new Error('req: step, payload');
-//   };
-//
-//   this.getData = function (step) {
-//     if (checkStep(step)) {
-//       return this.data[step];
-//     }
-//     throw new Error('req: step to be defined');
-//   };
-//
-//   this.removeData = function (step) {
-//     if (checkStep(step)) {
-//       delete this.data[step];
-//       return step;
-//     }
-//     throw new Error('req: step to be defined');
-//   };
-//
-//   this.currentStepData = function () {
-//     return this.data[this.currentStep];
-//   };
-//
-//
-//   /**
-//    * Wizard form data in steps.
-//    */
-//   this.currentStep = 0; // intializes it with first step.
-//
-//   /**
-//   * updateStep - update the current step of the wizard
-//   *
-//   * @param  {number} currentStep currentStep
-//   * @param  {string} action      next/prev
-//   */
-//   this.updateStep = function (index) {
-//     if (angular.isNumber(index) && index > -1) {
-//       this.currentStep = index;
-//       return index;
-//     }
-//     throw new Error('req: number & > -1');
-//   };
-//
-//   this.stepIncrement = function () {
-//     this.currentStep += 1;
-//     return this.currentStep;
-//   };
-//
-//   this.stepDecrement = function () {
-//     if (this.currentStep > 0) {
-//       this.currentStep -= 1;
-//       return this.currentStep;
-//     }
-//     throw new Error('Current step should be > 0');
-//   };
-//
-//   /**
-//    * Form validations
-//    */
-//   this.formValidationStatus = true;
-//   this.formValidation = function (validity) {
-//     if (validity === true || validity === false) {
-//       self.formValidationStatus = validity;
-//       return validity;
-//     }
-//     throw new Error('req: Boolean');
-//   };
-//
-//   this.getFormValidation = function () {
-//     return self.formValidationStatus;
-//   };
-// }
-//
 export default app.service('wizard', WizardService);

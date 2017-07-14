@@ -1,5 +1,5 @@
 /**
- *
+ * Container - Main directive in which control and steps are transcluded.
  */
 
 import template from './container.html';

@@ -50,7 +50,7 @@
     "start": "node_modules/.bin/webpack-dev-server",
     "pretest": "rm -rf coverage",
     "test": "karma start",
-    "posttest": " cat ./coverage/PhantomJS\\ 2.1.1\\ \\(Linux\\ 0.0.0\\)/lcov.info | ./node_modules/coveralls/bin/coveralls.js",
+    "coverall": " cat ./coverage/PhantomJS\\ 2.1.1\\ \\(Linux\\ 0.0.0\\)/lcov.info | ./node_modules/coveralls/bin/coveralls.js",
     "test-watch": "karma start --auto-watch --no-single-run",
     "build": "webpack --env build",
     "dev": "webpack --progress --colors --watch --env dev"

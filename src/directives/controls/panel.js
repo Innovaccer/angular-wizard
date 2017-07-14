@@ -1,3 +1,8 @@
+
+/**
+ * Panel: next/prev button panel.
+ */
+
 import template from './panel.html';
 
 function panel(wizard) {
@@ -15,17 +20,32 @@ function panel(wizard) {
         ctrl.loadTemplate(ctrl.steps[index], index);
       };
 
+      // get form validation status, stored in wizard Service.
       scope.validation = wizard.getFormValidation.bind(wizard);
 
+      /**
+       * nextStep - initiate next step.
+       *
+       * @return {boolean}
+       */
       scope.nextStep = function () {
         return wizard.currentStep === stepsLength - 1 ||
           !scope.validation();
       };
 
+      /**
+       * nextStep - initiate prev step.
+       *
+       * @return {boolean}
+       */
       scope.prevStep = function () {
         return wizard.currentStep === 0 || !scope.validation();
       };
 
+
+      /**
+       * control - handle prev/next buttons.
+       */
       scope.control = function (action) {
         var currentStep = wizard.currentStep;
 
