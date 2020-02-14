@@ -56,6 +56,6 @@
     "dev": "webpack --progress --colors --watch --env dev"
   },
   "dependencies": {
-    "angular": "1.6.4"
+    "angular": "1.7.9"
   }
 }
